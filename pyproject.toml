@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling", "csv", "argparse", "pytest", "unittest", "tabulate"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dev_report_creator_YARA_RISHAR"
+version = "0.0.1"
+authors = [
+  { name="Yara Rishar", email="fenella5864@mail.ru" },
+]
+description = "Скрипт читает csv-файлы с данными и формирует отчёты"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/YaraRishar/devreportcreator"
+Issues = "https://github.com/YaraRishar/devreportcreator/issues"

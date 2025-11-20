@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 
 from src import main
+from src.main import Developer, PerformanceReport
 
 
 def test_parse_arguments():
@@ -52,38 +53,28 @@ def test_read_csv_files(sample_csv_file, establish_content):
     assert result == establish_content
 
 
-def test_get_unique_position_dict(establish_content):
-    result = main.get_unique_position_dict(establish_content)
-    assert "Frontend Developer" in result.keys()
-    assert "Backend Developer" in result.keys()
-    assert len(result["Frontend Developer"]) == 1
-    assert len(result["Backend Developer"]) == 2
+@pytest.fixture
+def developers_list(establish_content) -> list[Developer]:
+    dev_list = []
+    for dev in establish_content:
+        dev_list.append(main.parse_developer(dev))
+    return dev_list
 
 
-def test_get_report_for():
-    content = {
-        "Mobile Developer": [
-            {"name": "David Chen", "completed_tasks": "36", "performance": "4.6",
-             "skills": "Swift, Kotlin, React Native, iOS", "team": "Mobile Team", "experience_years": "3"},
-            {"name": "Lisa Wang", "completed_tasks": "33", "performance": "4.6",
-             "skills": "Flutter, Dart, Android, Firebase",
-             "team": "Mobile Team", "experience_years": "2"}
-        ],
-        "Backend Developer": [
-            {"name": "Elena Popova", "completed_tasks": "43", "performance": "4.8",
-             "skills": "Java, Spring Boot, MySQL, Redis", "team": "API Team", "experience_years": "4"},
-            {"name": "Tom Anderson", "completed_tasks": "49", "performance": "4.9",
-             "skills": "Go, Microservices, gRPC, PostgreSQL",
-             "team": "API Team", "experience_years": "7"}]}
+def test_parse_developer(developers_list):
+    assert developers_list[0].name == "Olga Kuznetsova"
+    assert developers_list[1].position == "Backend Developer"
 
-    report = main.get_report_for(content, "performance")
-    assert report["Mobile Developer"] == "4.60"
+
+def test_performance_report(developers_list):
+    report = PerformanceReport.generate(developers_list)
+    assert report["Frontend Developer"] == "4.60"
     assert report["Backend Developer"] == "4.85"
 
 
 def test_display_report(capsys):
     report = {"Mobile Developer": "4.6", "Frontend Developer": "4.33", "Data Engineer": "4.7"}
-    main.display_report(report, "performance")
+    main.display_report(report, ["position", "performance"])
     captured = capsys.readouterr()
     assert "Mobile Developer" in captured.out
     assert "4.60" in captured.out
